@@ -4,9 +4,12 @@ import (
 	"flag"
 	"log"
 	"net/http"
+	"os"
 	"path/filepath"
 	"sync"
 	"text/template"
+
+	"github.com/fhirt/trace"
 )
 
 // templ represents a single template
@@ -28,6 +31,7 @@ func main() {
 	var port = flag.String("port", ":8080", "The port of the application.")
 	flag.Parse()
 	r:= NewRoom()
+	r.tracer = trace.New(os.Stdout)
 	http.Handle("/", &templateHandler{filename: "chat.html"})
 	http.Handle("/room", r)
 	// get the room going

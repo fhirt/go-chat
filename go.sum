@@ -1,2 +1,4 @@
+github.com/fhirt/trace v0.0.0-20220419191028-c653fe2dfbeb h1:w8znCEhVJ7Cy8E3TPoTra65mS1/+yIzjI47IlDhIiuY=
+github.com/fhirt/trace v0.0.0-20220419191028-c653fe2dfbeb/go.mod h1:/y+iC3U4GXJ9fQGa3l/ERLwSyWO5ivrB6+FAjhtzrq8=
 github.com/gorilla/websocket v1.5.0 h1:PPwGk2jz7EePpoHN/+ClbZu8SPxiqlu12wZP/3sWmnc=
 github.com/gorilla/websocket v1.5.0/go.mod h1:YR8l580nyteQvAITg2hZ9XVh4b55+EU/adAjf1fMHhE=
