@@ -38,10 +38,12 @@ func (t *templateHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	var port = flag.String("port", ":8080", "The port of the application.")
+	var githubClientId = flag.String("github-client-id", "", "The id for the github oauth application")
+	var githubSecret = flag.String("github-secret", "", "The secret for the github oauth application")
 	flag.Parse()
 	// setup gomniauth
 	gomniauth.SetSecurityKey("My_Security_Key4omniAuth")
-	gomniauth.WithProviders(github.New("235703fcca56ccdcb538","17dbdc7e166b2eb775c06f6da2fb1b17f9025661","http://localhost:8080/auth/callback/github"))
+	gomniauth.WithProviders(github.New(*githubClientId,*githubSecret,"http://localhost:8080/auth/callback/github"))
 	r:= newRoom()
 	r.tracer = trace.New(os.Stdout)
 	http.Handle("/chat", MustAuth(&templateHandler{filename: "chat.html"}))
