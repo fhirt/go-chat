@@ -1,7 +1,6 @@
 package main
 
 import (
-	"chat/chat"
 	"flag"
 	"log"
 	"net/http"
@@ -28,7 +27,7 @@ func (t *templateHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 func main() {
 	var port = flag.String("port", ":8080", "The port of the application.")
 	flag.Parse()
-	r:= chat.NewRoom()
+	r:= NewRoom()
 	http.Handle("/", &templateHandler{filename: "chat.html"})
 	http.Handle("/room", r)
 	// get the room going
