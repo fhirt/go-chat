@@ -2,6 +2,7 @@ package main
 
 import (
 	"chat/chat"
+	"flag"
 	"log"
 	"net/http"
 	"path/filepath"
@@ -21,17 +22,20 @@ func (t *templateHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	t.once.Do(func() {
 		t.templ = template.Must(template.ParseFiles(filepath.Join("templates", t.filename)))
 	})
-	t.templ.Execute(w, nil)
+	t.templ.Execute(w, r)
 }
 
 func main() {
+	var port = flag.String("port", ":8080", "The port of the application.")
+	flag.Parse()
 	r:= chat.NewRoom()
 	http.Handle("/", &templateHandler{filename: "chat.html"})
 	http.Handle("/room", r)
 	// get the room going
 	go r.Run()
 	//start the web server
-	if err := http.ListenAndServe(":8080", nil); err != nil {
+	log.Println("Starting web server on", *port)
+	if err := http.ListenAndServe(*port, nil); err != nil {
 		log.Fatal("ListenAndServe:", err)
 	}
 }
