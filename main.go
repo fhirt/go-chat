@@ -10,6 +10,9 @@ import (
 	"text/template"
 
 	"github.com/fhirt/trace"
+	"github.com/stretchr/gomniauth"
+	"github.com/stretchr/gomniauth/providers/github"
+	"github.com/stretchr/objx"
 )
 
 // templ represents a single template
@@ -24,18 +27,29 @@ func (t *templateHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	t.once.Do(func() {
 		t.templ = template.Must(template.ParseFiles(filepath.Join("templates", t.filename)))
 	})
-	t.templ.Execute(w, r)
+	data := map[string]interface{}{
+		"Host": r.Host,
+	}
+	if authCookie, err := r.Cookie("auth"); err == nil {
+		data["UserData"] = objx.MustFromBase64(authCookie.Value)
+	}
+	t.templ.Execute(w, data)
 }
 
 func main() {
 	var port = flag.String("port", ":8080", "The port of the application.")
 	flag.Parse()
-	r:= NewRoom()
+	// setup gomniauth
+	gomniauth.SetSecurityKey("My_Security_Key4omniAuth")
+	gomniauth.WithProviders(github.New("235703fcca56ccdcb538","17dbdc7e166b2eb775c06f6da2fb1b17f9025661","http://localhost:8080/auth/callback/github"))
+	r:= newRoom()
 	r.tracer = trace.New(os.Stdout)
-	http.Handle("/", &templateHandler{filename: "chat.html"})
+	http.Handle("/chat", MustAuth(&templateHandler{filename: "chat.html"}))
+	http.Handle("/login", &templateHandler{filename: "login.html"})
+	http.HandleFunc("/auth/", loginHandler)
 	http.Handle("/room", r)
 	// get the room going
-	go r.Run()
+	go r.run()
 	//start the web server
 	log.Println("Starting web server on", *port)
 	if err := http.ListenAndServe(*port, nil); err != nil {

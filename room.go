@@ -8,32 +8,33 @@ import (
 	"github.com/fhirt/trace"
 )
 
-type Room struct {
+type room struct {
 	// forward is a channel that holds incoming messages
 	// that should be forwarded to the other clients.
 	forward chan []byte
 	// join is a channel for clients wishing to join the room.
-	join chan *Client
+	join chan *client
 	// leave is a channel for clients wishing to leave the room.
-	leave chan *Client
+	leave chan *client
 	// clients holds all current clients in this room.
-	clients map[*Client]bool
+	clients map[*client]bool
 	// tracer will receive trace information of activity
 	// in the room.
 	tracer trace.Tracer
 }
 
 // newRoom makes a new room.
-func NewRoom() *Room {
-	return &Room{
+func newRoom() *room {
+	return &room{
 		forward: make(chan []byte),
-		join: make(chan *Client),
-		leave: make(chan *Client),
-		clients: make(map[*Client]bool),
+		join: make(chan *client),
+		leave: make(chan *client),
+		clients: make(map[*client]bool),
+		tracer: trace.Off(),
 	}
 }
 
-func (r *Room) Run() {
+func (r *room) run() {
 	for {
 		select {
 		case client := <-r.join:
@@ -63,13 +64,13 @@ const (
 
 var upgrader = &websocket.Upgrader{ReadBufferSize: socketBufferSize, WriteBufferSize: socketBufferSize}
 
-func (r *Room) ServeHTTP(w http.ResponseWriter, req *http.Request) {
+func (r *room) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	socket, err := upgrader.Upgrade(w, req, nil)
 	if err != nil {
 		log.Fatal("ServeHTTP:", err)
 		return
 	}
-	client := &Client{
+	client := &client{
 		socket: socket,
 		send: make(chan []byte, messageBufferSize),
 		room: r,
@@ -78,6 +79,6 @@ func (r *Room) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	defer func() {
 		r.leave <- client
 	}()
-	go client.Write()
-	client.Read()
+	go client.write()
+	client.read()
 }
