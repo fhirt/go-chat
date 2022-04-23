@@ -37,7 +37,7 @@ func (t *templateHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	var port = flag.String("port", ":8080", "The port of the application.")
+	var host = flag.String("host", ":8080", "The host of the application.")
 	var githubClientId = flag.String("github-client-id", "", "The id for the github oauth application")
 	var githubSecret = flag.String("github-secret", "", "The secret for the github oauth application")
 	flag.Parse()
@@ -53,8 +53,8 @@ func main() {
 	// get the room going
 	go r.run()
 	//start the web server
-	log.Println("Starting web server on", *port)
-	if err := http.ListenAndServe(*port, nil); err != nil {
+	log.Println("Starting web server on", *host)
+	if err := http.ListenAndServe(*host, nil); err != nil {
 		log.Fatal("ListenAndServe:", err)
 	}
 }
