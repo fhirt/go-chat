@@ -43,17 +43,17 @@ func main() {
 	flag.Parse()
 	// setup gomniauth
 	gomniauth.SetSecurityKey("My_Security_Key4omniAuth")
-	gomniauth.WithProviders(github.New(*githubClientId,*githubSecret,"http://localhost:8080/auth/callback/github"))
-	r:= newRoom()
+	gomniauth.WithProviders(github.New(*githubClientId, *githubSecret, "http://localhost:8080/auth/callback/github"))
+	r := newRoom(UseAuthAvatar)
 	r.tracer = trace.New(os.Stdout)
 	http.Handle("/chat", MustAuth(&templateHandler{filename: "chat.html"}))
 	http.Handle("/login", &templateHandler{filename: "login.html"})
 	http.HandleFunc("/auth/", loginHandler)
 	http.HandleFunc("/logout", func(w http.ResponseWriter, r *http.Request) {
 		http.SetCookie(w, &http.Cookie{
-			Name: "auth",
-			Value: "",
-			Path: "/",
+			Name:   "auth",
+			Value:  "",
+			Path:   "/",
 			MaxAge: -1,
 		})
 		w.Header().Set("Location", "/chat")
