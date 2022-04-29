@@ -2,6 +2,8 @@ package main
 
 import (
 	"errors"
+	"io/ioutil"
+	"path"
 )
 
 // ErrNoAvatar is the error that is returned when the
@@ -69,5 +71,19 @@ func (FileSystemAvatar) GetAvatarURL(c *client) (string, error) {
 		return "", ErrNoAvatarURL
 	}
 
-	return "avatars/" + useridStr + ".jpg", nil
+	files, err := ioutil.ReadDir("avatars")
+	if err != nil {
+		return "", ErrNoAvatarURL
+	}
+
+	for _, file := range files {
+		if file.IsDir() {
+			continue
+		}
+		if match, _ := path.Match(useridStr+"*", file.Name()); match {
+			return "/avatars/" + file.Name(), nil
+		}
+	}
+
+	return "", ErrNoAvatarURL
 }
