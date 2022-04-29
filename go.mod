@@ -9,6 +9,12 @@ require (
 )
 
 require (
+	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/pmezard/go-difflib v1.0.0 // indirect
+	github.com/stretchr/testify v1.3.0 // indirect
+)
+
+require (
 	github.com/clbanning/x2j v0.0.0-20191024224557-825249438eec // indirect
 	github.com/stretchr/codecs v0.0.0-20170403063245-04a5b1e1910d // indirect
 	github.com/stretchr/objx v0.3.0

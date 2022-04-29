@@ -15,6 +15,13 @@ import (
 	"github.com/stretchr/objx"
 )
 
+// set the active Avatar implementation
+var avatars Avatar = TryAvatars{
+	UseFileSystemAvatar,
+	UseAuthAvatar,
+	UseGravatar,
+}
+
 // templ represents a single template
 type templateHandler struct {
 	once     sync.Once
@@ -44,7 +51,7 @@ func main() {
 	// setup gomniauth
 	gomniauth.SetSecurityKey("My_Security_Key4omniAuth")
 	gomniauth.WithProviders(github.New(*githubClientId, *githubSecret, "http://localhost:8080/auth/callback/github"))
-	r := newRoom(UseFileSystemAvatar)
+	r := newRoom()
 	r.tracer = trace.New(os.Stdout)
 	http.Handle("/chat", MustAuth(&templateHandler{filename: "chat.html"}))
 	http.Handle("/login", &templateHandler{filename: "login.html"})
